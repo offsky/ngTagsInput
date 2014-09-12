@@ -171,8 +171,19 @@ tagsInput.directive('autoComplete', function($document, $timeout, $sce, tagsInpu
             };
 
             tagsInput
-                .on('tag-added tag-removed invalid-tag input-blur', function() {
+                .on('invalid-tag input-blur', function() {
                     suggestionList.reset();
+                })
+                .on('tag-added tag-removed', function() {
+                    suggestionList.reset();
+                    
+                    //must give input chance to reset before we attempt to present the autocomplete again
+                    $timeout(function() {
+                        var value = tagsInput.getCurrentTagText();
+                        if (options.loadOnFocus && shouldLoadSuggestions(value)) {
+                            suggestionList.load(value, tagsInput.getTags());
+                        }
+                    });
                 })
                 .on('input-change', function(value) {
                     if (shouldLoadSuggestions(value)) {
