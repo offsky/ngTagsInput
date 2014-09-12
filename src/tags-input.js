@@ -269,8 +269,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                         shouldAdd, shouldRemove;
 
 
-                    if (key === KEYS.enter && scope.newTag.text=="") { //ADE: if ret key is pressed with nothing typed, tell caller
-                        scope.events.trigger('ret-pressed',e);                        
+                    if (key === KEYS.enter && scope.newTag.text==='') { // if ret key is pressed with nothing typed, tell caller
+                        scope.events.trigger('ret-pressed',e);
                     }
                     
                     if (isModifier || hotkeys.indexOf(key) === -1) {
