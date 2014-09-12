@@ -118,7 +118,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
         scope: {
             tags: '=ngModel',
             onTagAdded: '&',
-            onTagRemoved: '&'
+            onTagRemoved: '&',
+            onRetKey: '&',
         },
         replace: false,
         transclude: true,
@@ -202,6 +203,9 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                 .on('tag-added tag-removed', function() {
                     ngModelCtrl.$setViewValue(scope.tags);
                 })
+                .on('ret-pressed', function(e) {
+                    scope.onRetKey({e:e});
+                })
                 .on('invalid-tag', function() {
                     scope.newTag.invalid = true;
                 })
@@ -264,6 +268,11 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                         addKeys = {},
                         shouldAdd, shouldRemove;
 
+
+                    if (key === KEYS.enter && scope.newTag.text=="") { //ADE: if ret key is pressed with nothing typed, tell caller
+                        scope.events.trigger('ret-pressed',e);                        
+                    }
+                    
                     if (isModifier || hotkeys.indexOf(key) === -1) {
                         return;
                     }
