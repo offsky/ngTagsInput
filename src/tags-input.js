@@ -145,6 +145,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                 enableEditingLastTag: [Boolean, false],
                 minTags: [Number, 0],
                 maxTags: [Number, MAX_SAFE_INTEGER],
+                maxTagsForce: [Number, MAX_SAFE_INTEGER],
                 displayProperty: [String, 'text'],
                 allowLeftoverText: [Boolean, false],
                 addFromAutocompleteOnly: [Boolean, false],
@@ -202,6 +203,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                 .on('tag-removed', scope.onTagRemoved)
                 .on('esc-pressed', scope.onEscKey)
                 .on('tag-added', function() {
+                    //supports FIFO tag list with enforcing number of tags
+                    if(options.maxTagsForce && scope.tags.length>options.maxTagsForce) {
+                        scope.tags = scope.tags.slice(1,options.maxTagsForce+1);
+                    }
                     scope.newTag.text = '';
                 })
                 .on('tag-added tag-removed', function() {
