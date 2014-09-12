@@ -119,7 +119,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
             tags: '=ngModel',
             onTagAdded: '&',
             onTagRemoved: '&',
-            onEscKey: '&'
+            onEscKey: '&',
+            onRetKey: '&'
         },
         replace: false,
         transclude: true,
@@ -205,6 +206,9 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                 .on('tag-added tag-removed', function() {
                     ngModelCtrl.$setViewValue(scope.tags);
                 })
+                .on('ret-pressed', function(e) {
+                    scope.onRetKey({e:e});
+                })
                 .on('invalid-tag', function() {
                     scope.newTag.invalid = true;
                 })
@@ -279,8 +283,11 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
 
                     if (key === KEYS.escape) { //if esc key is pressed without autocomplete open, tell caller
                         scope.events.trigger('esc-pressed');
+                    } 
+                    else if (key === KEYS.enter && scope.newTag.text=="") { //ADE: if ret key is pressed with nothing typed, tell caller
+                        scope.events.trigger('ret-pressed',e);                        
                     }
-
+                    
                     if (isModifier || hotkeys.indexOf(key) === -1) {
                         return;
                     }
