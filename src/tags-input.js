@@ -118,7 +118,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
         scope: {
             tags: '=ngModel',
             onTagAdded: '&',
-            onTagRemoved: '&'
+            onTagRemoved: '&',
+            onBlurred: '&'
         },
         replace: false,
         transclude: true,
@@ -220,6 +221,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
 
                         setElementValidity();
                     }
+                    scope.onBlurred({how:scope.tabPressed ? scope.tabPressed : 0});
                 })
                 .on('option-change', function(e) {
                     if (validationOptions.indexOf(e.name) !== -1) {
@@ -264,6 +266,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                         addKeys = {},
                         shouldAdd, shouldRemove;
 
+                    if (key === KEYS.tab) { //ADE: if tab key is pressed (or shift tab)
+                        scope.tabPressed = e.shiftKey ? -1 : 1;
+                    }
+
                     if (isModifier || hotkeys.indexOf(key) === -1) {
                         return;
                     }
@@ -307,7 +313,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                             lostFocusToBrowserWindow = activeElement === input[0],
                             lostFocusToChildElement = element[0].contains(activeElement);
 
-                        if (lostFocusToBrowserWindow || !lostFocusToChildElement) {
+                        if (lostFocusToBrowserWindow === lostFocusToChildElement) {
                             scope.hasFocus = false;
                             events.trigger('input-blur');
                         }
