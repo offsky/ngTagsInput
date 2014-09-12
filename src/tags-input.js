@@ -118,7 +118,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
         scope: {
             tags: '=ngModel',
             onTagAdded: '&',
-            onTagRemoved: '&'
+            onTagRemoved: '&',
+            onEscKey: '&'
         },
         replace: false,
         transclude: true,
@@ -196,6 +197,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
             events
                 .on('tag-added', scope.onTagAdded)
                 .on('tag-removed', scope.onTagRemoved)
+                .on('esc-pressed', scope.onEscKey)
                 .on('tag-added', function() {
                     scope.newTag.text = '';
                 })
@@ -263,6 +265,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                         isModifier = e.shiftKey || e.altKey || e.ctrlKey || e.metaKey,
                         addKeys = {},
                         shouldAdd, shouldRemove;
+
+                    if (key === KEYS.escape) { //if esc key is pressed without autocomplete open, tell caller
+                        scope.events.trigger('esc-pressed');
+                    }
 
                     if (isModifier || hotkeys.indexOf(key) === -1) {
                         return;
