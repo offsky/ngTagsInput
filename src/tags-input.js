@@ -120,7 +120,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
             onTagAdded: '&',
             onTagRemoved: '&',
             onEscKey: '&',
-            onRetKey: '&'
+            onRetKey: '&',
+            onBlurred: '&'
         },
         replace: false,
         transclude: true,
@@ -237,6 +238,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                         setElementValidity();
                     }
                     $(document).off('touchend.ngTagsInput');
+                    scope.onBlurred({how:scope.tabPressed ? scope.tabPressed : 0});
                 })
                 .on('option-change', function(e) {
                     if (validationOptions.indexOf(e.name) !== -1) {
@@ -287,7 +289,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                     else if (key === KEYS.enter && scope.newTag.text==='') { // if ret key is pressed with nothing typed, tell caller
                         scope.events.trigger('ret-pressed',e);
                     }
-                    
+                    else if (key === KEYS.tab) { //if tab key is pressed (or shift tab) save the info for feeding to onBlur callback
+                        scope.tabPressed = e.shiftKey ? -1 : 1;
+                    }
+
                     if (isModifier || hotkeys.indexOf(key) === -1) {
                         return;
                     }
@@ -333,7 +338,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                             lostFocusToBrowserWindow = activeElement === input[0],
                             lostFocusToChildElement = element[0].contains(activeElement);
 
-                        if (lostFocusToBrowserWindow || !lostFocusToChildElement) {
+                        if (lostFocusToBrowserWindow === lostFocusToChildElement) {
                             scope.hasFocus = false;
                             events.trigger('input-blur');
                         }
