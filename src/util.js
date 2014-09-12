@@ -33,6 +33,7 @@ function makeObjectArray(array, key) {
 }
 
 function findInObjectArray(array, obj, key) {
+    if(array==undefined) return null;
     var item = null;
     for (var i = 0; i < array.length; i++) {
         // I'm aware of the internationalization issues regarding toLowerCase()

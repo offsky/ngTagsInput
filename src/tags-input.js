@@ -144,7 +144,8 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                 maxTags: [Number, MAX_SAFE_INTEGER],
                 displayProperty: [String, 'text'],
                 allowLeftoverText: [Boolean, false],
-                addFromAutocompleteOnly: [Boolean, false]
+                addFromAutocompleteOnly: [Boolean, false],
+                focusOnLoad: [Boolean, false]
             });
 
             $scope.tagList = new TagList($scope.options, $scope.events);
@@ -299,7 +300,9 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
                     scope.hasFocus = true;
                     events.trigger('input-focus');
 
-                    scope.$apply();
+                    $timeout(function() { //inside a timeout to prevent $digest loop conflict
+                        scope.$apply();
+                    });
                 })
                 .on('blur', function() {
                     $timeout(function() {
@@ -317,6 +320,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, tagsInputConfig) 
             element.find('div').on('click', function() {
                 input[0].focus();
             });
+
+            if(options.focusOnLoad) { //ADE: added to focus on load
+                input[0].focus();
+            }
         }
     };
 });
