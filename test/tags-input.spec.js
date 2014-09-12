@@ -303,7 +303,8 @@ describe('tags-input directive', function() {
 
             // Act
             getInput().triggerHandler('focus');
-
+            $timeout.flush();
+            
             // Assert
             expect(isolateScope.hasFocus).toBe(true);
             expect($scope.$digest).toHaveBeenCalled();
